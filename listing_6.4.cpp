@@ -1,58 +1,106 @@
 #include <memory>
-
-template<typename T>
+using namespace std;
+/*
+template <typename T>
 class queue
 {
 private:
     struct node
     {
         T data;
-        std::unique_ptr<node> next;
+        unique_ptr<node> next;
 
-        node(T data_):
-            data(std::move(data_))
-        {}
-    };
-    
-    std::unique_ptr<node> head;
-    node* tail;
-    
-public:
-    queue():
-        tail(nullptr)
-    {}
-
-    queue(const queue& other)=delete;
-    queue& operator=(const queue& other)=delete;
-
-    std::shared_ptr<T> try_pop()
-    {
-        if(!head)
+        node(T data_) : data(move(data_))
         {
-            return std::shared_ptr<T>();
         }
-        std::shared_ptr<T> const res(
-            std::make_shared<T>(std::move(head->data)));
-        std::unique_ptr<node> const old_head=std::move(head);
-        head=std::move(old_head->next);
-        if(!head)
-            tail=nullptr;
+    };
+
+    unique_ptr<node> head;
+    node *tail;
+
+public:
+    queue() : tail(nullptr)
+    {
+    }
+
+    queue(const queue &other) = delete;
+    queue &operator=(const queue &other) = delete;
+
+    shared_ptr<T> try_pop()
+    {
+        if (!head)
+            return shared_ptr<T>();
+
+        shared_ptr<T> const res(make_shared<T>(move(head->data)));
+        unique_ptr<node> const old_head = move(head);
+        head = move(old_head->next);
+        if (!head)
+            tail = nullptr;
         return res;
     }
-    
+
     void push(T new_value)
     {
-        std::unique_ptr<node> p(new node(std::move(new_value)));
-        node* const new_tail=p.get();
-        if(tail)
+        unique_ptr<node> p(new node(move(new_value)));
+        node *const new_tail = p.get();
+        if (tail)
+            tail->next = move(p);
+        else
+            head = move(p);
+
+        tail = new_tail;
+    }
+};
+*/
+
+template <typename T>
+class queue
+{
+private:
+    struct node
+    {
+        T data;
+        unique_ptr<node> next;
+
+        node(T data_) : data(move(data_))
         {
-            tail->next=std::move(p);
+        }
+    };
+
+    unique_ptr<node> head;
+    unique_ptr<node> tail;
+
+public:
+    queue(const queue &other) = delete;
+    queue &operator=(const queue &other) = delete;
+
+    shared_ptr<T> try_pop()
+    {
+        if (!head)
+            return shared_ptr<T>();
+
+        shared_ptr<T> const res(make_shared<T>(move(head->data)));
+        unique_ptr<node> const old_head = move(head);
+        head = move(old_head->next);
+        if (!head)
+            tail = nullptr;
+        return res;
+    }
+
+    void push(T new_value)
+    {
+        unique_ptr<node> p(new node(move(new_value)));
+        if (tail)
+        {
+            tail->next = p;
+            tail = p;
         }
         else
-        {
-            head=std::move(p);
-        }
-        tail=new_tail;
+            head = p;
     }
 };
 
+int main()
+{
+    return 0;
+}

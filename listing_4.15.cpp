@@ -1,45 +1,46 @@
 #include <string>
+using namespace std;
 
 struct card_inserted
 {
-    std::string account;
-
+    string account;
 };
+
 class atm
 {
     messaging::receiver incoming;
     messaging::sender bank;
     messaging::sender interface_hardware;
     void (atm::*state)();
-    std::string account;
-    std::string pin;
+    string account;
+    string pin;
     void waiting_for_card()
     {
         interface_hardware.send(display_enter_card());
         incoming.wait()
             .handle<card_inserted>(
-                [&](card_inserted const& msg)
+                [&](card_inserted const &msg)
                 {
-                    account=msg.account;
-                    pin="";
+                    account = msg.account;
+                    pin = "";
                     interface_hardware.send(display_enter_pin());
-                    state=&atm::getting_pin;
-                }
-                );
+                    state = &atm::getting_pin;
+                });
     }
     void getting_pin();
+
 public:
     void run()
     {
-        state=&atm::waiting_for_card;
+        state = &atm::waiting_for_card;
         try
         {
-            for(;;)
+            for (;;)
             {
                 (this->*state)();
             }
         }
-        catch(messaging::close_queue const&)
+        catch (messaging::close_queue const &)
         {
         }
     }

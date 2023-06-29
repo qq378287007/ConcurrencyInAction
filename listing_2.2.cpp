@@ -1,19 +1,21 @@
 #include <thread>
+#include <iostream>
+using namespace std;
 
-void do_something(int& i)
+void do_something(int &i)
 {
     ++i;
 }
 
 struct func
 {
-    int& i;
+    int &i;
 
-    func(int& i_):i(i_){}
+    func(int &i_) : i(i_) {}
 
     void operator()()
     {
-        for(unsigned j=0;j<1000000;++j)
+        for (unsigned j = 0; j < 1000000; ++j)
         {
             do_something(i);
         }
@@ -21,26 +23,30 @@ struct func
 };
 
 void do_something_in_current_thread()
-{}
+{
+}
 
 void f()
 {
-    int some_local_state=0;
+    int some_local_state = 0;
     func my_func(some_local_state);
-    std::thread t(my_func);
+    thread t(my_func);
     try
     {
         do_something_in_current_thread();
     }
-    catch(...)
+    catch (...)
     {
         t.join();
         throw;
     }
     t.join();
+
+    cout << "some_local_state: " << some_local_state << endl;
 }
 
 int main()
 {
     f();
+    return 0;
 }

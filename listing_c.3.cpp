@@ -2,7 +2,6 @@ namespace messaging
 {
     class receiver
     {
-        queue q;
     public:
         operator sender()
         {
@@ -12,5 +11,8 @@ namespace messaging
         {
             return dispatcher(&q);
         }
+
+    private:
+        queue q;
     };
 }

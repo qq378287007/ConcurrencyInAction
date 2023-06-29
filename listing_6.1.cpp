@@ -2,54 +2,62 @@
 #include <stack>
 #include <mutex>
 #include <memory>
+using namespace std;
 
-struct empty_stack: std::exception
+struct empty_stack : exception
 {
-    const char* what() const throw()
+    const char *what() const throw()
     {
         return "empty stack";
     }
 };
 
-template<typename T>
+template <typename T>
 class threadsafe_stack
 {
 private:
-    std::stack<T> data;
-    mutable std::mutex m;
+    stack<T> data;
+    mutable mutex m;
+
 public:
-    threadsafe_stack(){}
-    threadsafe_stack(const threadsafe_stack& other)
+    threadsafe_stack() {}
+    threadsafe_stack(const threadsafe_stack &other)
     {
-        std::lock_guard<std::mutex> lock(other.m);
-        data=other.data;
+        lock_guard<mutex> lock(other.m);
+        data = other.data;
     }
-    threadsafe_stack& operator=(const threadsafe_stack&) = delete;
+    threadsafe_stack &operator=(const threadsafe_stack &) = delete;
 
     void push(T new_value)
     {
-        std::lock_guard<std::mutex> lock(m);
-        data.push(std::move(new_value));
+        lock_guard<mutex> lock(m);
+        data.push(move(new_value));
     }
-    std::shared_ptr<T> pop()
+    shared_ptr<T> pop()
     {
-        std::lock_guard<std::mutex> lock(m);
-        if(data.empty()) throw empty_stack();
-        std::shared_ptr<T> const res(
-            std::make_shared<T>(std::move(data.top())));
+        lock_guard<mutex> lock(m);
+        if (data.empty())
+            throw empty_stack();
+        shared_ptr<T> const res(make_shared<T>(move(data.top())));
         data.pop();
         return res;
     }
-    void pop(T& value)
+    void pop(T &value)
     {
-        std::lock_guard<std::mutex> lock(m);
-        if(data.empty()) throw empty_stack();
-        value=std::move(data.top());
+        lock_guard<mutex> lock(m);
+        if (data.empty())
+            throw empty_stack();
+        value = move(data.top());
         data.pop();
     }
     bool empty() const
     {
-        std::lock_guard<std::mutex> lock(m);
+        lock_guard<mutex> lock(m);
         return data.empty();
     }
 };
+
+int main()
+{
+    return 0;
+}

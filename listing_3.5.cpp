@@ -2,54 +2,60 @@
 #include <stack>
 #include <mutex>
 #include <memory>
+using namespace std;
 
-struct empty_stack: std::exception
+struct empty_stack : exception
 {
-    const char* what() const throw()
+    const char *what() const throw()
     {
         return "empty stack";
     }
-    
 };
 
-template<typename T>
+template <typename T>
 class threadsafe_stack
 {
 private:
-    std::stack<T> data;
-    mutable std::mutex m;
+    stack<T> data;
+    mutable mutex m;
+
 public:
-    threadsafe_stack(){}
-    threadsafe_stack(const threadsafe_stack& other)
+    threadsafe_stack() {}
+    threadsafe_stack(const threadsafe_stack &other)
     {
-        std::lock_guard<std::mutex> lock(other.m);
-        data=other.data;
+        lock_guard<mutex> lock(other.m);
+        data = other.data;
     }
-    threadsafe_stack& operator=(const threadsafe_stack&) = delete;
+    threadsafe_stack &operator=(const threadsafe_stack &) = delete;
 
     void push(T new_value)
     {
-        std::lock_guard<std::mutex> lock(m);
+        lock_guard<mutex> lock(m);
         data.push(new_value);
     }
-    std::shared_ptr<T> pop()
+
+    shared_ptr<T> pop()
     {
-        std::lock_guard<std::mutex> lock(m);
-        if(data.empty()) throw empty_stack();
-        std::shared_ptr<T> const res(std::make_shared<T>(data.top()));
+        lock_guard<mutex> lock(m);
+        if (data.empty())
+            throw empty_stack();
+        shared_ptr<T> const res(make_shared<T>(data.top()));
         data.pop();
         return res;
     }
-    void pop(T& value)
+
+    void pop(T &value)
     {
-        std::lock_guard<std::mutex> lock(m);
-        if(data.empty()) throw empty_stack();
-        value=data.top();
+        lock_guard<mutex> lock(m);
+        if (data.empty())
+            throw empty_stack();
+        value = data.top();
         data.pop();
     }
+
     bool empty() const
     {
-        std::lock_guard<std::mutex> lock(m);
+        lock_guard<mutex> lock(m);
         return data.empty();
     }
 };
@@ -59,10 +65,10 @@ int main()
     threadsafe_stack<int> si;
     si.push(5);
     si.pop();
-    if(!si.empty())
+    if (!si.empty())
     {
         int x;
         si.pop(x);
     }
-    
+    return 0;
 }

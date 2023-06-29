@@ -1,33 +1,39 @@
 #include <mutex>
+#include <string>
+using namespace std;
 
 class some_data
 {
     int a;
-    std::string b;
+    string b;
+
 public:
     void do_something()
-    {}
+    {
+    }
 };
 
 class data_wrapper
 {
 private:
     some_data data;
-    std::mutex m;
+    mutex m;
+
 public:
-    template<typename Function>
+    template <typename Function>
     void process_data(Function func)
     {
-        std::lock_guard<std::mutex> l(m);
+        lock_guard<mutex> l(m);
         func(data);
     }
 };
 
-some_data* unprotected;
-
-void malicious_function(some_data& protected_data)
+// 能够获取到data_wrapper中some_data的指针
+// 锁失效
+some_data *unprotected;
+void malicious_function(some_data &protected_data)
 {
-    unprotected=&protected_data;
+    unprotected = &protected_data;
 }
 
 data_wrapper x;
@@ -41,4 +47,5 @@ void foo()
 int main()
 {
     foo();
+    return 0;
 }

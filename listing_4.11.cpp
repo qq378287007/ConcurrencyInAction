@@ -1,18 +1,24 @@
 #include <condition_variable>
 #include <mutex>
 #include <chrono>
-std::condition_variable cv;
+using namespace std;
+
+condition_variable cv;
 bool done;
-std::mutex m;
+mutex m;
 bool wait_loop()
 {
-    auto const timeout= std::chrono::steady_clock::now()+
-        std::chrono::milliseconds(500);
-    std::unique_lock<std::mutex> lk(m);
-    while(!done)
+    auto const timeout = chrono::steady_clock::now() + chrono::milliseconds(500);
+    unique_lock<mutex> lk(m);
+    while (!done)
     {
-        if(cv.wait_until(lk,timeout)==std::cv_status::timeout)
+        if (cv.wait_until(lk, timeout) == cv_status::timeout)
             break;
     }
     return done;
+}
+
+int main()
+{
+    return 0;
 }

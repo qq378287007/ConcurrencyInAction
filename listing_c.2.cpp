@@ -1,22 +1,29 @@
+
+#include <queue>
+#include <memory>
+using namespace std;
+
 namespace messaging
 {
+    template <typename Message>
     class sender
     {
-        queue*q;
     public:
-        sender():
-            q(nullptr)
-        {}
-        explicit sender(queue*q_):
-            q(q_)
-        {}
-        template<typename Message>
-        void send(Message const& msg)
+        explicit sender(shared_ptr<queue<Message>> q_ = nullptr) : q(q_)
         {
-            if(q)
-            {
-                q->push(msg);
-            }
         }
+        void send(Message const &msg)
+        {
+            if (q)
+                q->push(msg);
+        }
+
+    private:
+        shared_ptr<queue<Message>> q;
     };
+}
+
+int main()
+{
+    return 0;
 }

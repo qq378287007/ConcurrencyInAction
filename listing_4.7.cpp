@@ -1,34 +1,46 @@
 #include <string>
 #include <future>
+using namespace std;
 
 struct X
 {
-    void foo(int,std::string const&);
-    std::string bar(std::string const&);
+    void foo(int, string const &) {}
+    string bar(string const &str) { return str; }
 };
-
-
-X x;
-auto f1=std::async(&X::foo,&x,42,"hello");
-auto f2=std::async(&X::bar,x,"goodbye");
 
 struct Y
 {
-    double operator()(double);
+    double operator()(double data) { return data; }
 };
-Y y;
-auto f3=std::async(Y(),3.141);
-auto f4=std::async(std::ref(y),2.718);
-X baz(X&);
-auto f6=std::async(baz,std::ref(x));
+
 class move_only
 {
 public:
-    move_only();
-    move_only(move_only&&);
-    move_only(move_only const&) = delete;
-    move_only& operator=(move_only&&);
-    move_only& operator=(move_only const&) = delete;
-    void operator()();
+    move_only() {}
+    move_only(move_only &&) {}
+    move_only(move_only const &) = delete;
+    move_only &operator=(move_only &&) { return *this; }
+    move_only &operator=(move_only const &) = delete;
+    void operator()() {}
 };
-auto f5=std::async(move_only());
+
+X baz(X &x)
+{
+    return x;
+}
+
+int main()
+{
+    X x;
+    auto f1 = async(&X::foo, &x, 42, "hello");
+    auto f2 = async(&X::bar, x, "goodbye");
+
+    auto f3 = async(Y(), 3.141);
+    Y y;
+    auto f4 = async(ref(y), 2.718);
+
+    auto f5 = async(move_only());
+
+    auto f6 = async(baz, ref(x));
+    return 0;
+}
