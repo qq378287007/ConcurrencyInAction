@@ -25,5 +25,9 @@ namespace messaging
 
 int main()
 {
+    //messaging::sender<int> s;
+    messaging::sender<int> s(make_shared<queue<int>>());
+    s.send(123);
+
     return 0;
 }

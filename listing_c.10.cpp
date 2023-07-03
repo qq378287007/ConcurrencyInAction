@@ -2,16 +2,17 @@ int main()
 {
     bank_machine bank;
     interface_machine interface_hardware;
-    atm machine(bank.get_sender(),interface_hardware.get_sender());
-    std::thread bank_thread(&bank_machine::run,&bank);
-    std::thread if_thread(&interface_machine::run,&interface_hardware);
-    std::thread atm_thread(&atm::run,&machine);
+    atm machine(bank.get_sender(), interface_hardware.get_sender());
+    std::thread bank_thread(&bank_machine::run, &bank);
+    std::thread if_thread(&interface_machine::run, &interface_hardware);
+    std::thread atm_thread(&atm::run, &machine);
     messaging::sender atmqueue(machine.get_sender());
-    bool quit_pressed=false;
-    while(!quit_pressed)
+
+    bool quit_pressed = false;
+    while (!quit_pressed)
     {
-        char c=getchar();
-        switch(c)
+        char c = getchar();
+        switch (c)
         {
         case '0':
         case '1':
@@ -35,17 +36,21 @@ int main()
             atmqueue.send(cancel_pressed());
             break;
         case 'q':
-            quit_pressed=true;
+            quit_pressed = true;
             break;
         case 'i':
             atmqueue.send(card_inserted("acc1234"));
             break;
         }
     }
+
     bank.done();
     machine.done();
     interface_hardware.done();
+
     atm_thread.join();
     bank_thread.join();
     if_thread.join();
+
+    return 0;
 }
