@@ -15,9 +15,7 @@ namespace messaging
     struct wrapped_message : message_base
     {
         Msg contents;
-        explicit wrapped_message(Msg const &contents_) : contents(contents_)
-        {
-        }
+        explicit wrapped_message(Msg const &contents_) : contents(contents_) { }
     };
 
     class queueMy
@@ -56,12 +54,8 @@ int main()
     q.push(123);
     auto d1 = q.wait_and_pop();
     auto d11 = dynamic_pointer_cast<messaging::wrapped_message<int>>(d1);
-    d11->contents;
-
     q.push(string("123"));
     auto d2 = q.wait_and_pop();
-    auto d22 = dynamic_pointer_cast<messaging::wrapped_message<int>>(d2);
-    d22->contents;
-
+    auto d22 = dynamic_pointer_cast<messaging::wrapped_message<string>>(d2);
     return 0;
 }

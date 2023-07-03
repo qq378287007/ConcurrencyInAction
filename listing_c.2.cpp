@@ -27,6 +27,7 @@ int main()
 {
     //messaging::sender<int> s;
     messaging::sender<int> s(make_shared<queue<int>>());
+
     s.send(1);
     s.send(4);
 

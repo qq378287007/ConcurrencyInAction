@@ -15,9 +15,7 @@ namespace messaging
     struct wrapped_message : message_base
     {
         Msg contents;
-        explicit wrapped_message(Msg const &contents_) : contents(contents_)
-        {
-        }
+        explicit wrapped_message(Msg const &contents_) : contents(contents_) {}
     };
 
     class queueMy
@@ -47,7 +45,78 @@ namespace messaging
         condition_variable c;
         queue<shared_ptr<message_base>> q;
     };
+}
 
+namespace messaging
+{
+    template <typename PreviousDispatcher, typename Msg, typename Func>
+    class TemplateDispatcher
+    {
+        queueMy *q;
+        PreviousDispatcher *prev;
+        Func f;
+        bool chained;
+
+        TemplateDispatcher(TemplateDispatcher const &) = delete;
+        TemplateDispatcher &operator=(TemplateDispatcher const &) = delete;
+
+        template <typename Dispatcher, typename OtherMsg, typename OtherFunc>
+
+
+        friend class TemplateDispatcher;
+
+        void wait_and_dispatch()
+        {
+            while (true)
+            {
+                auto msg = q->wait_and_pop();
+                if (dispatch(msg))
+                    break;
+            }
+        }
+
+        bool dispatch(std::shared_ptr<message_base> const &msg)
+        {
+            if (wrapped_message<Msg> *wrapper = dynamic_cast<wrapped_message<Msg> *>(msg.get()))
+            {
+                f(wrapper->contents);
+                return true;
+            }
+            else
+            {
+                return prev->dispatch(msg);
+            }
+        }
+
+    public:
+        TemplateDispatcher(TemplateDispatcher &&other)
+            : q(other.q), prev(other.prev), f(std::move(other.f)), chained(other.chained)
+        {
+            other.chained = true;
+        }
+
+        TemplateDispatcher(queueMy *q_, PreviousDispatcher *prev_, Func &&f_)
+            : q(q_), prev(prev_), f(std::forward<Func>(f_)), chained(false)
+        {
+            prev_->chained = true;
+        }
+
+        template <typename OtherMsg, typename OtherFunc>
+        TemplateDispatcher<TemplateDispatcher, OtherMsg, OtherFunc> handle(OtherFunc &&of)
+        {
+            return TemplateDispatcher<TemplateDispatcher, OtherMsg, OtherFunc>(q, this, std::forward<OtherFunc>(of));
+        }
+
+        ~TemplateDispatcher() noexcept(false)
+        {
+            if (!chained)
+                wait_and_dispatch();
+        }
+    };
+}
+
+namespace messaging
+{
     class close_queue
     {
     };
@@ -65,9 +134,10 @@ namespace messaging
 
         void wait_and_dispatch()
         {
-            for (;;)
+            while (true)
             {
                 auto msg = q->wait_and_pop();
+
                 dispatch(msg);
             }
         }
@@ -76,7 +146,6 @@ namespace messaging
         {
             if (dynamic_cast<wrapped_message<close_queue> *>(msg.get()))
                 throw close_queue();
-
             return false;
         }
 
@@ -106,6 +175,5 @@ namespace messaging
 
 int main()
 {
-
     return 0;
 }

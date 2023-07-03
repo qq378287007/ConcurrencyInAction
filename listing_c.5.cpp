@@ -1,33 +1,81 @@
+#include <mutex>
+#include <condition_variable>
+#include <queue>
+#include <memory>
+using namespace std;
+
 namespace messaging
 {
-    template<typename PreviousDispatcher,typename Msg,typename Func>
+    struct message_base
+    {
+        virtual ~message_base() = default;
+    };
+
+    template <typename Msg>
+    struct wrapped_message : message_base
+    {
+        Msg contents;
+        explicit wrapped_message(Msg const &contents_) : contents(contents_) {}
+    };
+
+    class queueMy
+    {
+    public:
+        template <typename T>
+        void push(T const &msg)
+        {
+            lock_guard<mutex> lk(m);
+            q.push(make_shared<wrapped_message<T>>(msg));
+            c.notify_all();
+        }
+        shared_ptr<message_base> wait_and_pop()
+        {
+            unique_lock<mutex> lk(m);
+            // c.wait(lk, [&]{ return !q.empty(); });
+            while (q.empty())
+                c.wait(lk);
+
+            auto res = q.front();
+            q.pop();
+            return res;
+        }
+
+    private:
+        mutex m;
+        condition_variable c;
+        queue<shared_ptr<message_base>> q;
+    };
+}
+
+namespace messaging
+{
+    template <typename PreviousDispatcher, typename Msg, typename Func>
     class TemplateDispatcher
     {
-        queue* q;
-        PreviousDispatcher* prev;
+        queueMy *q;
+        PreviousDispatcher *prev;
         Func f;
         bool chained;
 
-        TemplateDispatcher(TemplateDispatcher const&)=delete;
-        TemplateDispatcher& operator=(TemplateDispatcher const&)=delete;
+        TemplateDispatcher(TemplateDispatcher const &) = delete;
+        TemplateDispatcher &operator=(TemplateDispatcher const &) = delete;
 
-        template<typename Dispatcher,typename OtherMsg,typename OtherFunc>
+        template <typename Dispatcher, typename OtherMsg, typename OtherFunc>
         friend class TemplateDispatcher;
 
         void wait_and_dispatch()
         {
-            for(;;)
+            while (true)
             {
-                auto msg=q->wait_and_pop();
-                if(dispatch(msg))
+                auto msg = q->wait_and_pop();
+                if (dispatch(msg))
                     break;
             }
         }
 
-        bool dispatch(std::shared_ptr<message_base> const& msg)
+        bool dispatch(std::shared_ptr<message_base> const &msg)
         {
-            if(wrapped_message<Msg>* wrapper=
-               dynamic_cast<wrapped_message<Msg>*>(msg.get()))
+            if (wrapped_message<Msg> *wrapper = dynamic_cast<wrapped_message<Msg> *>(msg.get()))
             {
                 f(wrapper->contents);
                 return true;
@@ -37,35 +85,35 @@ namespace messaging
                 return prev->dispatch(msg);
             }
         }
+
     public:
-        TemplateDispatcher(TemplateDispatcher&& other):
-            q(other.q),prev(other.prev),f(std::move(other.f)),
-            chained(other.chained)
+        TemplateDispatcher(TemplateDispatcher &&other)
+            : q(other.q), prev(other.prev), f(std::move(other.f)), chained(other.chained)
         {
-            other.chained=true;
+            other.chained = true;
         }
 
-        TemplateDispatcher(queue* q_,PreviousDispatcher* prev_,Func&& f_):
-            q(q_),prev(prev_),f(std::forward<Func>(f_)),chained(false)
+        TemplateDispatcher(queueMy *q_, PreviousDispatcher *prev_, Func &&f_)
+            : q(q_), prev(prev_), f(std::forward<Func>(f_)), chained(false)
         {
-            prev_->chained=true;
+            prev_->chained = true;
         }
 
-        template<typename OtherMsg,typename OtherFunc>
-        TemplateDispatcher<TemplateDispatcher,OtherMsg,OtherFunc>
-        handle(OtherFunc&& of)
+        template <typename OtherMsg, typename OtherFunc>
+        TemplateDispatcher<TemplateDispatcher, OtherMsg, OtherFunc> handle(OtherFunc &&of)
         {
-            return TemplateDispatcher<
-                TemplateDispatcher,OtherMsg,OtherFunc>(
-                    q,this,std::forward<OtherFunc>(of));
+            return TemplateDispatcher<TemplateDispatcher, OtherMsg, OtherFunc>(q, this, std::forward<OtherFunc>(of));
         }
 
         ~TemplateDispatcher() noexcept(false)
         {
-            if(!chained)
-            {
+            if (!chained)
                 wait_and_dispatch();
-            }
         }
     };
+}
+
+int main()
+{
+    return 0;
 }
