@@ -46,12 +46,18 @@ public:
         return true;
     }
 };
-thread_local unsigned long
-    hierarchical_mutex::this_thread_hierarchy_value(ULONG_MAX);
+
+thread_local unsigned long hierarchical_mutex::this_thread_hierarchy_value(ULONG_MAX);
 
 int main()
 {
-    hierarchical_mutex m1(42);
     hierarchical_mutex m2(2000);
+    hierarchical_mutex m1(42);
+
+    m2.lock();
+    m1.lock();
+    m1.unlock();
+    m2.unlock();
+
     return 0;
 }

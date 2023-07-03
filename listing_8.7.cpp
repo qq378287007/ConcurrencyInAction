@@ -1,5 +1,6 @@
 #include <future>
 #include <algorithm>
+
 struct join_threads
 {
     join_threads(std::vector<std::thread>&)

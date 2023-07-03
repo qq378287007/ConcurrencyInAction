@@ -8,13 +8,12 @@ public:
 
     no_copies(no_copies const &) = delete;
     no_copies &operator=(no_copies const &) = delete;
-/*
-private:
-    no_copies(no_copies const &);
-    no_copies &operator=(no_copies const &);
-*/
+    /*
+    private:
+        no_copies(no_copies const &);
+        no_copies &operator=(no_copies const &);
+    */
 };
-
 
 class my_class
 {
@@ -27,7 +26,7 @@ public:
 
     move_only(const move_only &) = delete;
     move_only &operator=(const move_only &) = delete;
-    
+
     move_only(move_only &&other) : data(move(other.data))
     {
     }
@@ -47,14 +46,15 @@ int main()
     // no_copies b(a);//禁止拷贝
 
     no_copies c;
-    //c = a; //禁止赋值
+    // c = a; //禁止赋值
 
     move_only m1;
     // move_only m2(m1);
     move_only m3(move(m1));
 
     move_only m4;
+    // m4=m3;
     m4 = move(m3);
-    
+
     return 0;
 }

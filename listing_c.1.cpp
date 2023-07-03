@@ -51,5 +51,17 @@ namespace messaging
 
 int main()
 {
+    messaging::queueMy q;
+
+    q.push(123);
+    auto d1 = q.wait_and_pop();
+    auto d11 = dynamic_pointer_cast<messaging::wrapped_message<int>>(d1);
+    d11->contents;
+
+    q.push(string("123"));
+    auto d2 = q.wait_and_pop();
+    auto d22 = dynamic_pointer_cast<messaging::wrapped_message<int>>(d2);
+    d22->contents;
+
     return 0;
 }

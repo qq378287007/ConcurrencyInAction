@@ -40,13 +40,11 @@ int main()
 {
     X x1;
     X x2 = std::move(x1);
-    X x3 = static_cast<X &&>(x2);//同上
+    X x3 = static_cast<X &&>(x2); // 同上
 
-    
-    //do_stuff(x1);//error
+    // do_stuff(x1);//error
     do_stuff(std::move(x1));
     do_stuff(X());
-
 
     foo(3.14);          // foo<double>(3.14)
     foo(std::string()); // foo<std::string>(std::string())

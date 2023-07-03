@@ -1,6 +1,7 @@
 #include <future>
 #include <algorithm>
 #include <thread>
+
 std::thread task_thread;
 std::atomic<bool> task_cancelled(false);
 
@@ -18,17 +19,12 @@ void gui_thread()
 void task()
 {
     while(!task_complete() && !task_cancelled)
-    {
         do_next_operation();
-    }
+    
     if(task_cancelled)
-    {
         perform_cleanup();
-    }
     else
-    {
         post_gui_event(task_complete);
-    }
 }
 
 void process(event_data const& event)
