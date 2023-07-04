@@ -42,5 +42,6 @@ int main()
     auto f5 = async(move_only());
 
     auto f6 = async(baz, ref(x));
+
     return 0;
 }

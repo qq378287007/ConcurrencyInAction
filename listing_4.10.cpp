@@ -1,31 +1,16 @@
 #include <future>
 using namespace std;
 
-using payload_type = int;
+// using payload_type = int;
+struct payload_type
+{
+};
 
 struct data_packet
 {
     int id;
-    int payload;
+    payload_type payload;
 };
-
-template <typename T>
-class promise
-{
-    T p;
-public:
-    promise(){};
-    void set_value(int) {}
-};
-
-/*
-template <>
-class promise<payload_type>
-{
-public:
-    void set_value(int) {}
-};
-*/
 
 struct outgoing_packet
 {
@@ -35,45 +20,18 @@ struct outgoing_packet
 
 class connection_set
 {
-    int val;    // 具体的数字
-    int length; // 数字的位数
+    int m_Value;
+    int m_Length;
     promise<payload_type> p;
-    void getlength()
-    {
-        if (val / 10 == 0)
-        { // 这个数字只有1位
-            length = 1;
-            return;
-        }
-        int x = 10; // 这里就是不断重复除直到为0，从而得出数字的具体位数
-        int pow = 0;
-        int num = val;
-        while (num != 0)
-        {
-            num /= 10;
-            pow++;
-        }
-        length = pow;
-    }
 
 public:
-    void num(int num)
-    { // 以下是一些基本的函数，用于设置值
-        val = num;
-        getlength();
-    }
-    void set(int num)
-    {
-        val = num;
-        getlength();
-    }
-    int get()
-    {
-        return val;
-    }
+    int value() const { return m_Value; }
+    void setValue(int Value) { m_Value = Value; }
+    int length() const { return m_Length; }
+    void setLength(int Length) { m_Length = Length; }
 
-    bool has_incoming_data() { return true; }
-    bool has_outgoing_data() { return true; }
+    bool has_incoming_data() const { return true; }
+    bool has_outgoing_data() const { return true; }
     outgoing_packet top_of_outgoing_queue() { return outgoing_packet(); }
 
     data_packet incoming() { return data_packet(); }
@@ -139,11 +97,12 @@ void process_connections(connection_set &connections)
                 promise<payload_type> &p = connection->get_promise(data.id);
                 p.set_value(data.payload);
             }
+
             if (connection->has_outgoing_data())
             {
                 outgoing_packet data = connection->top_of_outgoing_queue();
                 connection->send(data.payload);
-                data.promise.set_value(true);
+                // data.promise.set_value(true);
             }
         }
     }

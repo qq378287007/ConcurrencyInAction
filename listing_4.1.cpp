@@ -4,42 +4,33 @@
 #include <queue>
 using namespace std;
 
-bool more_data_to_prepare()
-{
-    return false;
-}
-
 struct data_chunk
 {
 };
-
-data_chunk prepare_data()
-{
-    return data_chunk();
-}
-
-void process(data_chunk &)
-{
-}
-
-bool is_last_chunk(data_chunk &)
-{
-    return true;
-}
 
 mutex mut;
 queue<data_chunk> data_queue;
 condition_variable data_cond;
 
+bool more_data_to_prepare() { return false; }
+data_chunk prepare_data() { return data_chunk(); }
+void process(data_chunk &) {}
+bool is_last_chunk(data_chunk &) { return true; }
+
+void add_data()
+{
+    data_chunk const data = prepare_data();
+    {
+        lock_guard<mutex> lk(mut);
+        data_queue.push(data);
+    }
+    data_cond.notify_one();
+}
+
 void data_preparation_thread()
 {
     while (more_data_to_prepare())
-    {
-        data_chunk const data = prepare_data();
-        lock_guard<mutex> lk(mut);
-        data_queue.push(data);
-        data_cond.notify_one();
-    }
+        add_data();
 }
 
 void data_processing_thread()
@@ -47,9 +38,9 @@ void data_processing_thread()
     while (true)
     {
         unique_lock<mutex> lk(mut);
-        //data_cond.wait(lk, [] { return !data_queue.empty(); });
+        // data_cond.wait(lk, [] { return !data_queue.empty(); });
         while (data_queue.empty())
-           data_cond.wait(lk);
+            data_cond.wait(lk);
         data_chunk data = data_queue.front();
         data_queue.pop();
         lk.unlock();
@@ -66,6 +57,8 @@ int main()
     thread t2(data_processing_thread);
 
     t1.join();
+
+    add_data();
     t2.join();
     return 0;
 }
