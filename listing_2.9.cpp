@@ -23,16 +23,24 @@ T parallel_accumulate(Iterator first, Iterator last, T init)
     if (!length)
         return init;
 
+    // 每个线程处理元素的最低限定量
     unsigned long const min_per_thread = 25;
+
+    // 最大线程数量
     unsigned long const max_threads = (length + min_per_thread - 1) / min_per_thread;
 
+    // 硬件线程数量
     unsigned long const hardware_threads = thread::hardware_concurrency();
 
+    // 实际运行线程数量
     unsigned long const num_threads = min(hardware_threads != 0 ? hardware_threads : 2, max_threads);
 
+    // 各线程分担数量
     unsigned long const block_size = length / num_threads;
 
     vector<T> results(num_threads);
+
+    // 发起线程数量，当前函数占据一个线程
     vector<thread> threads(num_threads - 1);
 
     Iterator block_start = first;
@@ -44,10 +52,13 @@ T parallel_accumulate(Iterator first, Iterator last, T init)
                             block_start, block_end, ref(results[i]));
         block_start = block_end;
     }
+    // 处理最后一小块
     accumulate_block<Iterator, T>()(block_start, last, results[num_threads - 1]);
 
+    // 循环等待所有线程完成
     for_each(threads.begin(), threads.end(), mem_fn(&thread::join));
 
+    // 数值累加
     return accumulate(results.begin(), results.end(), init);
 }
 

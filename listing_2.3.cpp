@@ -4,12 +4,10 @@ using namespace std;
 
 class thread_guard
 {
-    std::thread &t;
+    thread &t;
 
 public:
-    explicit thread_guard(std::thread &t_) : t(t_)
-    {
-    }
+    explicit thread_guard(thread &t_) : t(t_) {}
     ~thread_guard()
     {
         if (t.joinable())
@@ -19,10 +17,7 @@ public:
     thread_guard &operator=(thread_guard const &) = delete;
 };
 
-void do_something(int &i)
-{
-    ++i;
-}
+void do_something(int &i) { ++i; }
 
 struct func
 {
@@ -33,15 +28,11 @@ struct func
     void operator()()
     {
         for (unsigned j = 0; j < 1000000; ++j)
-        {
             do_something(i);
-        }
     }
 };
 
-void do_something_in_current_thread()
-{
-}
+void do_something_in_current_thread() {}
 
 void f(int &some_local_state)
 {

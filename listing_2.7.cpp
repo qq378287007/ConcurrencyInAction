@@ -22,6 +22,7 @@ public:
     {
         cout << "joining_thread\n";
     }
+
     joining_thread(joining_thread &&other) noexcept : t(move(other.t))
     {
     }
@@ -30,20 +31,25 @@ public:
     {
         if (joinable())
             join();
+
         t = move(other.t);
         return *this;
     }
+
     joining_thread &operator=(thread other) noexcept
     {
         if (joinable())
             join();
+
         t = move(other);
         return *this;
     }
+
     ~joining_thread() noexcept
     {
         if (joinable())
             join();
+            
         cout << "~joining_thread\n";
     }
 

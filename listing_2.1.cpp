@@ -2,10 +2,7 @@
 #include <iostream>
 using namespace std;
 
-void do_something(int &i)
-{
-    ++i;
-}
+void do_something(int &i) { ++i; }
 
 struct func
 {
@@ -16,9 +13,7 @@ struct func
     void operator()()
     {
         for (unsigned j = 0; j < 1000000; ++j)
-        {
             do_something(i);
-        }
     }
 };
 
