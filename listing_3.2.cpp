@@ -8,14 +8,11 @@ class some_data
     string b;
 
 public:
-    void do_something()
-    {
-    }
+    void do_something() {}
 };
 
 class data_wrapper
 {
-private:
     some_data data;
     mutex m;
 
