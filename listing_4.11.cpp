@@ -20,5 +20,7 @@ bool wait_loop()
 
 int main()
 {
+    wait_loop();
+    
     return 0;
 }

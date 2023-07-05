@@ -12,7 +12,7 @@ class hierarchical_mutex
 
     void check_for_hierarchy_violation()
     {
-        if (this_thread_hierarchy_value <= hierarchy_value)
+        if (this_thread_hierarchy_value < hierarchy_value)
             throw logic_error("mutex hierarchy violated");
     }
     void update_hierarchy_value()
@@ -23,9 +23,7 @@ class hierarchical_mutex
 
 public:
     explicit hierarchical_mutex(unsigned long value)
-        : hierarchy_value(value), previous_hierarchy_value(0)
-    {
-    }
+        : hierarchy_value(value), previous_hierarchy_value(0){}
     void lock()
     {
         check_for_hierarchy_violation();
@@ -34,8 +32,9 @@ public:
     }
     void unlock()
     {
-        this_thread_hierarchy_value = previous_hierarchy_value;
+        check_for_hierarchy_violation();
         internal_mutex.unlock();
+        this_thread_hierarchy_value = previous_hierarchy_value;
     }
     bool try_lock()
     {
@@ -51,12 +50,14 @@ thread_local unsigned long hierarchical_mutex::this_thread_hierarchy_value(ULONG
 
 int main()
 {
-    hierarchical_mutex m2(2000);
-    hierarchical_mutex m1(42);
+    hierarchical_mutex m2(100);
+    hierarchical_mutex m1(10);
 
-    m2.lock();
+    m2.lock();//必须m2先加锁
     m1.lock();
-    m1.unlock();
+
+
+    m1.unlock();//必须m1先解锁
     m2.unlock();
 
     return 0;

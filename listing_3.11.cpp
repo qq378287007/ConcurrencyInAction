@@ -41,5 +41,6 @@ int main()
 {
     foo();
     undefined_behaviour_with_double_checked_locking();
+    
     return 0;
 }

@@ -20,7 +20,7 @@ public:
     {
         if (&lhs == &rhs)
             return true;
-            
+
         int const lhs_value = lhs.get_detail();
         int const rhs_value = rhs.get_detail();
         return lhs_value == rhs_value;
@@ -29,5 +29,10 @@ public:
 
 int main()
 {
+    Y y1(1);
+    Y y2(2);
+
+    y1 == y2;
+
     return 0;
 }
