@@ -13,16 +13,16 @@ private:
         unique_ptr<node> next;
     };
 
-    mutex head_mutex;
     unique_ptr<node> head;
-    mutex tail_mutex;
     node *tail;
+
+    mutex head_mutex;
+    mutex tail_mutex;
+
     condition_variable data_cond;
 
 public:
-    threadsafe_queue() : head(new node), tail(head.get())
-    {
-    }
+    threadsafe_queue() : head(new node), tail(head.get()) {}
     threadsafe_queue(const threadsafe_queue &other) = delete;
     threadsafe_queue &operator=(const threadsafe_queue &other) = delete;
 

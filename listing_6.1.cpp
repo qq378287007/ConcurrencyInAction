@@ -17,7 +17,8 @@ class threadsafe_stack
 {
 private:
     stack<T> data;
-    mutable mutex m;
+    // mutable mutex m;
+    mutex m;
 
 public:
     threadsafe_stack() {}
@@ -31,7 +32,8 @@ public:
     void push(T new_value)
     {
         lock_guard<mutex> lock(m);
-        data.push(move(new_value));
+        // data.push(move(new_value));
+        data.emplace(new_value); // 同上
     }
     shared_ptr<T> pop()
     {

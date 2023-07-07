@@ -2,73 +2,72 @@
 #include <mutex>
 #include <atomic>
 #include <condition_variable>
-
-// #include "node.hpp"
-template <typename T>
-struct node
-{
-    //T data;
-    //node<T>  *next;
-
-    std::shared_ptr<T> data;
-    std::unique_ptr<node<T>> next;
-    //node() : next() {}
-    //node(T const &value) : data(std::make_shared<T>(value)) {}
-};
+using namespace std;
 
 template <typename T>
 class threadsafe_queue
 {
 private:
-    std::atomic<node<T> *> tail;
-    std::atomic<node<T> *> head;
-    std::mutex tail_mutex;
-    std::mutex head_mutex;
-    std::condition_variable data_cond;
-    node<T> *get_tail()
+    struct node
     {
-        std::lock_guard<std::mutex> tail_lock(tail_mutex);
+        shared_ptr<T> data;
+        unique_ptr<node> next;
+    };
+
+private:
+    atomic<node *> tail;
+    atomic<node *> head;
+
+    mutex tail_mutex;
+    mutex head_mutex;
+
+    condition_variable data_cond;
+
+    node *get_tail()
+    {
+        lock_guard<mutex> tail_lock(tail_mutex);
         return tail;
     }
 
-    std::unique_ptr<node<T>> pop_head()
+    unique_ptr<node> pop_head()
     {
-        std::unique_ptr<node<T>> const old_head = std::move(head);
-        head = std::move(old_head->next);
+        unique_ptr<node> old_head = move(head);
+        head = move(old_head->next);
         return old_head;
     }
 
-    std::unique_lock<std::mutex> wait_for_data()
+    unique_lock<mutex> wait_for_data()
     {
-        std::unique_lock<std::mutex> head_lock(head_mutex);
-        data_cond.wait(head_lock, [&]
-                       { return head != get_tail(); });
-        return std::move(head_lock);
+        unique_lock<mutex> head_lock(head_mutex);
+        // data_cond.wait(head_lock, [&] { return head != get_tail(); });
+        while (head == get_tail)
+            data_cond.wait(head_lock);
+        return move(head_lock);
     }
 
-    std::unique_ptr<node<T>> wait_pop_head()
+    unique_ptr<node> wait_pop_head()
     {
-        std::unique_lock<std::mutex> head_lock(wait_for_data());
+        unique_lock<mutex> head_lock(wait_for_data());
         return pop_head();
     }
 
-    std::unique_ptr<node<T>> wait_pop_head(T &value)
+    unique_ptr<node> wait_pop_head(T &value)
     {
-        std::unique_lock<std::mutex> head_lock(wait_for_data());
-        value = std::move(*head->data);
+        unique_lock<mutex> head_lock(wait_for_data());
+        value = move(*head->data);
         return pop_head();
     }
 
 public:
-    std::shared_ptr<T> wait_and_pop()
+    shared_ptr<T> wait_and_pop()
     {
-        std::unique_ptr<node<T>> const old_head = wait_pop_head();
+        unique_ptr<node> const old_head = wait_pop_head();
         return old_head->data;
     }
 
     void wait_and_pop(T &value)
     {
-        std::unique_ptr<node<T>> const old_head = wait_pop_head(value);
+        unique_ptr<node> const old_head = wait_pop_head(value);
     }
 };
 

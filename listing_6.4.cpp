@@ -1,6 +1,7 @@
 #include <memory>
+#include <iostream>
 using namespace std;
-/*
+
 template <typename T>
 class queue
 {
@@ -10,18 +11,14 @@ private:
         T data;
         unique_ptr<node> next;
 
-        node(T data_) : data(move(data_))
-        {
-        }
+        node(T data_) : data(move(data_)) {}
     };
 
     unique_ptr<node> head;
     node *tail;
 
 public:
-    queue() : tail(nullptr)
-    {
-    }
+    queue() : tail(nullptr) {}
 
     queue(const queue &other) = delete;
     queue &operator=(const queue &other) = delete;
@@ -51,8 +48,8 @@ public:
         tail = new_tail;
     }
 };
-*/
 
+/*
 template <typename T>
 class queue
 {
@@ -62,15 +59,14 @@ private:
         T data;
         unique_ptr<node> next;
 
-        node(T data_) : data(move(data_))
-        {
-        }
+        node(T data_) : data(move(data_)) {}
     };
 
     unique_ptr<node> head;
     unique_ptr<node> tail;
 
 public:
+    queue() = default;
     queue(const queue &other) = delete;
     queue &operator=(const queue &other) = delete;
 
@@ -91,16 +87,27 @@ public:
     {
         unique_ptr<node> p(new node(move(new_value)));
         if (tail)
-        {
             tail->next = p;
-            tail = p;
-        }
         else
             head = p;
+        tail = p;
     }
 };
+*/
 
 int main()
 {
+    queue<int> q;
+    q.push(1);
+    q.push(2);
+
+    auto d1 = q.try_pop();
+    cout << *d1 << endl;
+
+    auto d2 = q.try_pop();
+    cout << *d2 << endl;
+
+    cout << boolalpha << (q.try_pop() == nullptr) << endl;
+
     return 0;
 }

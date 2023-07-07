@@ -8,19 +8,21 @@ template <typename T>
 class threadsafe_queue
 {
 private:
-    mutable mutex mut;
+    // mutable mutex mut;
+    mutex mut;
     queue<T> data_queue;
     condition_variable data_cond;
 
 public:
-    threadsafe_queue()
-    {
-    }
+    threadsafe_queue() {}
 
-    void push(T new_value)
+    void push(T &&new_value)
     {
-        lock_guard<mutex> lk(mut);
-        data_queue.push(move(new_value));
+        {
+            lock_guard<mutex> lk(mut);
+            // data_queue.push(move(new_value));
+            data_queue.emplace(new_value);
+        }
         data_cond.notify_one();
     }
 

@@ -1,4 +1,5 @@
 #include <memory>
+#include <iostream>
 using namespace std;
 
 template <typename T>
@@ -15,9 +16,7 @@ private:
     node *tail;
 
 public:
-    queue() : head(new node), tail(head.get())
-    {
-    }
+    queue() : head(new node), tail(head.get()) {}
 
     queue(const queue &other) = delete;
     queue &operator=(const queue &other) = delete;
@@ -36,8 +35,9 @@ public:
     void push(T new_value)
     {
         shared_ptr<T> new_data(make_shared<T>(move(new_value)));
-        unique_ptr<node> p(new node);
         tail->data = new_data;
+
+        unique_ptr<node> p(new node);
         node *const new_tail = p.get();
         tail->next = move(p);
         tail = new_tail;
@@ -46,5 +46,17 @@ public:
 
 int main()
 {
+    queue<int> q;
+    q.push(1);
+    q.push(2);
+
+    auto d1 = q.try_pop();
+    cout << *d1 << endl;
+
+    auto d2 = q.try_pop();
+    cout << *d2 << endl;
+
+    cout << boolalpha << (q.try_pop() == nullptr) << endl;
+
     return 0;
 }

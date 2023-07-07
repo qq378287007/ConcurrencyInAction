@@ -8,19 +8,18 @@ template <typename T>
 class threadsafe_queue
 {
 private:
-    mutable mutex mut;
+    // mutable mutex mut;
+    mutex mut;
     queue<shared_ptr<T>> data_queue;
     condition_variable data_cond;
 
 public:
-    threadsafe_queue()
-    {
-    }
+    threadsafe_queue() {}
 
     void wait_and_pop(T &value)
     {
         unique_lock<mutex> lk(mut);
-        //data_cond.wait(lk, [this] { return !data_queue.empty(); });
+        // data_cond.wait(lk, [this] { return !data_queue.empty(); });
         while (data_queue.empty())
             data_cond.wait(lk);
         value = move(*data_queue.front());
@@ -40,7 +39,7 @@ public:
     shared_ptr<T> wait_and_pop()
     {
         unique_lock<mutex> lk(mut);
-        //data_cond.wait(lk, [this]{ return !data_queue.empty(); });
+        // data_cond.wait(lk, [this]{ return !data_queue.empty(); });
         while (data_queue.empty())
             data_cond.wait(lk);
         shared_ptr<T> res = data_queue.front();
@@ -64,11 +63,14 @@ public:
         return data_queue.empty();
     }
 
-    void push(T new_value)
+    void push(T &&new_value)
     {
         shared_ptr<T> data(make_shared<T>(move(new_value)));
-        lock_guard<mutex> lk(mut);
-        data_queue.push(data);
+        {
+            lock_guard<mutex> lk(mut);
+            //data_queue.push(data);
+            data_queue.emplace(data);
+        }
         data_cond.notify_one();
     }
 };
