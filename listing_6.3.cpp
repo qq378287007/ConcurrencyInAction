@@ -77,5 +77,9 @@ public:
 
 int main()
 {
+    threadsafe_queue<int> rq;
+    rq.push(12);
+    rq.wait_and_pop();
+    
     return 0;
 }

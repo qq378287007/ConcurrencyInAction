@@ -18,8 +18,8 @@ private:
     atomic<node *> tail;
     atomic<node *> head;
 
-    mutex tail_mutex;
     mutex head_mutex;
+    mutex tail_mutex;
 
     condition_variable data_cond;
 

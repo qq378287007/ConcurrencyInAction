@@ -61,5 +61,9 @@ public:
 
 int main()
 {
+    threadsafe_stack<int> s;
+    s.push(12);
+    s.pop();
+
     return 0;
 }
