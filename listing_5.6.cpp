@@ -5,7 +5,7 @@ using namespace std;
 
 atomic<int> x(0), y(0), z(0);
 atomic<bool> go(false);
-unsigned const loop_count = 10;
+unsigned const loop_count = 5;
 
 struct read_values
 {
@@ -37,7 +37,7 @@ void read_vals(read_values *values)
 {
     while (!go)
         this_thread::yield();
-        
+
     for (unsigned i = 0; i < loop_count; ++i)
     {
         values[i].x = x.load(memory_order_relaxed);

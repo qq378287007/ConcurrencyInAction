@@ -13,7 +13,7 @@ void reader_thread()
     while (!data_ready.load())
         this_thread::sleep_for(chrono::milliseconds(1));
 
-    cout << "The answer=" << data[0] << "\n";
+    cout << "The answer = " << data[0] << "\n";
 }
 
 void writer_thread()
@@ -24,5 +24,10 @@ void writer_thread()
 
 int main()
 {
+    thread a(reader_thread);
+    thread b(writer_thread);
+    b.join();
+    a.join();
+
     return 0;
 }

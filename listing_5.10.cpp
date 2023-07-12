@@ -31,6 +31,7 @@ void use_x()
     assert(x->s == "hello");
     assert(a.load(memory_order_relaxed) == 99);
 }
+
 int main()
 {
     thread t1(create_x);

@@ -6,9 +6,7 @@ class spinlock_mutex
     atomic_flag flag;
 
 public:
-    spinlock_mutex() : flag(ATOMIC_FLAG_INIT)
-    {
-    }
+    spinlock_mutex() : flag(ATOMIC_FLAG_INIT) {}
     void lock()
     {
         while (flag.test_and_set(memory_order_acquire))
@@ -22,5 +20,9 @@ public:
 
 int main()
 {
+    spinlock_mutex m;
+    m.lock();
+    m.unlock();
+
     return 0;
 }

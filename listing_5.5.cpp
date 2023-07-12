@@ -29,6 +29,6 @@ int main()
     thread b(read_y_then_x);
     a.join();
     b.join();
-    assert(z.load() != 0);
+    assert(z.load() != 0); // 可能出错
     return 0;
 }

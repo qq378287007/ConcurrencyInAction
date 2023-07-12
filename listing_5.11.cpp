@@ -15,7 +15,7 @@ void populate_queue()
     queue_data.clear();
     for (unsigned i = 0; i < number_of_items; ++i)
         queue_data.push_back(i);
-        
+
     count.store(number_of_items, memory_order_release);
 }
 
