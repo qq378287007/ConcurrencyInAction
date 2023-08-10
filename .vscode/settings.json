@@ -52,6 +52,8 @@
         "streambuf": "cpp",
         "thread": "cpp",
         "typeinfo": "cpp",
-        "queue": "cpp"
+        "queue": "cpp",
+        "execution": "cpp",
+        "variant": "cpp"
     }
 }

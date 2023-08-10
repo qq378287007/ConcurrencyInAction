@@ -1,7 +1,6 @@
 #include <future>
 using namespace std;
 
-// using payload_type = int;
 struct payload_type
 {
 };
@@ -51,39 +50,18 @@ public:
             pos = 0;
             obj = nullptr;
         }
-        void operator++()
-        {
-            ++pos;
-        }
-        void operator++(int i)
-        {
-            pos++;
-        }
-
-        bool operator!=(const connection_iterator &it)
-        {
-            return it.pos != pos;
-        }
-
-        int operator*() const
-        {
-            return 0;
-        }
-
-        connection_set *operator->()
-        {
-            return obj;
-        }
+        void operator++() { ++pos; }
+        void operator++(int i) { pos++; }
+        bool operator!=(const connection_iterator &it) { return it.pos != pos; }
+        int operator*() const { return 0; }
+        connection_set *operator->() { return obj; }
     };
 
     connection_iterator begin() { return connection_iterator(); }
     connection_iterator end() { return connection_iterator(); }
 };
 
-bool done(connection_set &connections)
-{
-    return true;
-}
+bool done(connection_set &connections) { return false; }
 
 void process_connections(connection_set &connections)
 {
@@ -102,7 +80,7 @@ void process_connections(connection_set &connections)
             {
                 outgoing_packet data = connection->top_of_outgoing_queue();
                 connection->send(data.payload);
-                // data.promise.set_value(true);
+                data.promise.set_value(data.payload);
             }
         }
     }
