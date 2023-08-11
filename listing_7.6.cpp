@@ -1,28 +1,27 @@
 #include <atomic>
 #include <memory>
+using namespace std;
 
-std::shared_ptr<T> pop()
+shared_ptr<T> pop()
 {
-    std::atomic<void*>& hp=get_hazard_pointer_for_current_thread();
-    node* old_head=head.load();
+    atomic<void *> &hp = get_hazard_pointer_for_current_thread();
+    node *old_head = head.load();
     do
     {
-        node* temp;
+        node *temp;
         do
         {
-            temp=old_head;
+            temp = old_head;
             hp.store(old_head);
-            old_head=head.load();
-        } while(old_head!=temp);
-    }
-    while(old_head &&
-          !head.compare_exchange_strong(old_head,old_head->next));
+            old_head = head.load();
+        } while (old_head != temp);
+    } while (old_head && !head.compare_exchange_strong(old_head, old_head->next));
     hp.store(nullptr);
-    std::shared_ptr<T> res;
-    if(old_head)
+    shared_ptr<T> res;
+    if (old_head)
     {
         res.swap(old_head->data);
-        if(outstanding_hazard_pointers_for(old_head))
+        if (outstanding_hazard_pointers_for(old_head))
         {
             reclaim_later(old_head);
         }

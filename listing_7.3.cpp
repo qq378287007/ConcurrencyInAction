@@ -1,5 +1,6 @@
 #include <atomic>
 #include <memory>
+using namespace std;
 
 template <typename T>
 class lock_free_stack
@@ -7,11 +8,11 @@ class lock_free_stack
 private:
     struct node
     {
-        std::shared_ptr<T> data;
+        shared_ptr<T> data;
         node *next;
-        node(T const &data_) : data(std::make_shared<T>(data_)) {}
+        node(T const &data_) : data(make_shared<T>(data_)) {}
     };
-    std::atomic<node *> head;
+    atomic<node *> head;
 
 public:
     void push(T const &data)
@@ -21,12 +22,12 @@ public:
         while (!head.compare_exchange_weak(new_node->next, new_node))
             ;
     }
-    std::shared_ptr<T> pop()
+    shared_ptr<T> pop()
     {
         node *old_head = head.load();
         while (old_head && !head.compare_exchange_weak(old_head, old_head->next))
             ;
-        return old_head ? old_head->data : std::shared_ptr<T>();
+        return old_head ? old_head->data : shared_ptr<T>();
     }
 };
 

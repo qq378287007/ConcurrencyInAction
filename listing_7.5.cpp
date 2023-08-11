@@ -1,4 +1,5 @@
 #include <atomic>
+using namespace std;
 
 template <typename T>
 class lock_free_stack
@@ -10,9 +11,9 @@ private:
         node *next;
         node(T const &data_) : data(data_) {}
     };
-    std::atomic<unsigned> threads_in_pop;
-    
-    std::atomic<node *> to_be_deleted;
+    atomic<unsigned> threads_in_pop;
+
+    atomic<node *> to_be_deleted;
     static void delete_nodes(node *nodes)
     {
         while (nodes)

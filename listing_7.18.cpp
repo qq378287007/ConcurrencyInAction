@@ -1,5 +1,7 @@
 #include <memory>
 #include <atomic>
+using namespace std;
+
 template<typename T>
 class lock_free_queue
 {
@@ -17,17 +19,17 @@ private:    struct node;
     };
     struct node
     {
-        std::shared_ptr<T> data;
-        std::atomic<int> internal_count;
+        shared_ptr<T> data;
+        atomic<int> internal_count;
         counted_node_ptr next;
         node(T const& data_):
-            data(std::make_shared<T>(data_)),
+            data(make_shared<T>(data_)),
             internal_count(0)
         {}
         void release_ref()
         {
             node_counter old_counter=
-                count.load(std::memory_order_relaxed);
+                count.load(memory_order_relaxed);
             node_counter new_counter;
             do
             {
@@ -36,7 +38,7 @@ private:    struct node;
             }
             while(!count.compare_exchange_strong(
                       old_counter,new_counter,
-                      std::memory_order_acquire,std::memory_order_relaxed));
+                      memory_order_acquire,memory_order_relaxed));
             if(!new_counter.internal_count &&
                !new_counter.external_counters)
             {
@@ -44,8 +46,8 @@ private:    struct node;
             }
         }
     };
-    std::atomic<counted_node_ptr> head;
-    std::atomic<counted_node_ptr> tail;
+    atomic<counted_node_ptr> head;
+    atomic<counted_node_ptr> tail;
 
 
 };

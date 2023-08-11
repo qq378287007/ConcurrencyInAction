@@ -1,4 +1,5 @@
 #include <atomic>
+using namespace std;
 
 template <typename T>
 class lock_free_stack
@@ -10,7 +11,7 @@ private:
         node *next;
         node(T const &data_) : data(data_) {}
     };
-    std::atomic<node *> head;
+    atomic<node *> head;
 
 public:
     void push(T const &data)
