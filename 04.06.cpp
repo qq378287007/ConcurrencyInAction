@@ -14,6 +14,6 @@ int main()
     the_answer.wait(); // wait可省略
     the_answer.wait(); // wait可省略
     cout << "The answer is " << the_answer.get() << endl;
-    // cout << "The answer is " << the_answer.get() << endl;//error，只能调用一次
+    // cout << "The answer is " << the_answer.get() << endl;//error，get只能调用一次
     return 0;
 }

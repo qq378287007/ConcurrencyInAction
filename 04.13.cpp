@@ -33,8 +33,8 @@ list<T> parallel_quick_sort(list<T> input)
 int main()
 {
     list<int> input{45, 84, 22, 16, 0, 32, 15, 11, 6, 3, 9, 12, 0};
-    auto result = parallel_quick_sort(input);
-    for (auto data : result)
+    list<int> result = parallel_quick_sort(input);
+    for (int data : result)
         cout << data << endl;
     return 0;
 }

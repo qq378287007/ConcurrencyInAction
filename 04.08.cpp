@@ -32,9 +32,9 @@ int main()
     thread t(std::move(task), a, std::ref(b));
 
     string result = res.get();
-    cout <<"result: " <<result <<endl;
+    cout << "result: " << result << endl;
 
-    t.join();
+    t.join();//多余？
 
     return 0;
 }

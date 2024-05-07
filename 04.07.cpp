@@ -4,27 +4,26 @@ using namespace std;
 
 struct X
 {
-    void foo(int, string const &) {}
-    string bar(string const &str) { return str; }
+    void foo(int, string const &) const {}
+    string bar(string const &str) const { return str; }
 };
 
 struct Y
 {
-    double operator()(double data) { return data; }
+    double operator()(double data) const { return data; }
 };
 
-class move_only
+struct move_only
 {
-public:
     move_only() {}
     move_only(move_only &&) {}
     move_only(move_only const &) = delete;
     move_only &operator=(move_only &&) { return *this; }
     move_only &operator=(move_only const &) = delete;
-    void operator()() {}
+    void operator()() const {}
 };
 
-X baz(X &x)
+X baz(const X &x)
 {
     return x;
 }
