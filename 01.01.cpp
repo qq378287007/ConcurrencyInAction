@@ -11,6 +11,5 @@ int main()
 {
     thread t(hello);
     t.join();
-    
     return 0;
 }

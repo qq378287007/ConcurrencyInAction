@@ -3,11 +3,9 @@
 using namespace std;
 
 void some_function() {}
-
-void some_other_function(int) {}
-
 thread f() { return thread(some_function); }
 
+void some_other_function(int) {}
 thread g()
 {
     thread t(some_other_function, 42);

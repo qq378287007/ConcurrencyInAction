@@ -7,7 +7,6 @@ using namespace std;
 template <typename T>
 class threadsafe_queue
 {
-private:
     mutex mut;
     queue<T> data_queue;
     condition_variable data_cond;
@@ -76,8 +75,8 @@ int main()
     thread t2(data_processing_thread);
 
     t1.join();
-
     add_data();
     t2.join();
+
     return 0;
 }

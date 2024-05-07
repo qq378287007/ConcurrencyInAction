@@ -19,7 +19,7 @@ public:
     {
         shared_lock<shared_mutex> lk(entry_mutex);
         map<string, dns_entry>::const_iterator const it = entries.find(domain);
-        return (it == entries.end()) ? dns_entry() : it->second;
+        return (it == entries.cend()) ? dns_entry() : it->second;
     }
     void update_or_add_entry(string const &domain, dns_entry const &dns_details)
     {
@@ -51,5 +51,3 @@ int main()
 
     return 0;
 }
-
-// g++ listing_3.13.cpp -std=c++17 -o listing_3.13 && listing_3.13

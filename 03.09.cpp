@@ -1,10 +1,7 @@
 #include <mutex>
 using namespace std;
 
-class some_big_object
-{
-};
-
+class some_big_object{};
 void swap(some_big_object &lhs, some_big_object &rhs) {}
 
 class X

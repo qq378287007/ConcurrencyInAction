@@ -2,7 +2,7 @@
 #include <cstddef>
 using namespace std;
 
-template <typename T, typename Container = std::deque<T>>
+template <typename T, typename Container = deque<T>>
 class stack
 {
 public:

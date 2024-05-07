@@ -57,8 +57,8 @@ int main()
     thread t2(data_processing_thread);
 
     t1.join();
-
     add_data();
     t2.join();
+    
     return 0;
 }

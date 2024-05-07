@@ -16,7 +16,7 @@ void add_to_list(int new_value)
 bool list_contains(int value_to_find)
 {
     lock_guard<mutex> guard(some_mutex);
-    return find(some_list.begin(), some_list.end(), value_to_find) != some_list.end();
+    return find(some_list.cbegin(), some_list.cend(), value_to_find) != some_list.cend();
 }
 
 int main()

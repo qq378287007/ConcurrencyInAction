@@ -1,10 +1,7 @@
 #include <mutex>
 using namespace std;
 
-class some_big_object
-{
-};
-
+class some_big_object{};
 void swap(some_big_object &lhs, some_big_object &rhs) {}
 
 class X
@@ -23,13 +20,14 @@ public:
             return;
 
         // c++11
-        std::lock(lhs.m, rhs.m);
-        std::lock_guard<std::mutex> lock_a(lhs.m, std::adopt_lock); // adopt_lock指明互斥已被锁住
-        std::lock_guard<std::mutex> lock_b(rhs.m, std::adopt_lock);
+        lock(lhs.m, rhs.m);
+        lock_guard<mutex> lock_a(lhs.m, adopt_lock); // adopt_lock指明互斥已被锁住
+        lock_guard<mutex> lock_b(rhs.m, adopt_lock);
 
         // c++17
-        // std::scoped_lock guard(lhs.m, rhs.m);
-        // std::scoped_lock<std::mutex, std::mutex> guard(lhs.m, rhs.m);
+        // scoped_lock guard(lhs.m, rhs.m);
+        // scoped_lock<mutex, mutex> guard(lhs.m, rhs.m);
+        
         swap(lhs.some_detail, rhs.some_detail);
     }
 };

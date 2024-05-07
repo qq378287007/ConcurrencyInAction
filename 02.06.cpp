@@ -5,11 +5,9 @@
 using namespace std;
 
 void do_something(int &i) { ++i; }
-
 struct func
 {
     int &i;
-
     func(int &i_) : i(i_) {}
 
     void operator()()

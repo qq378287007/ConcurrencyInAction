@@ -32,8 +32,8 @@ void process_user_input(user_command const &cmd) {}
 void edit_document(string const &filename)
 {
     cout << filename << endl;
-
     open_document_and_display_gui(filename);
+    
     // while (!done_editing())
     for (int i = 0; i < 2; i++)
     {

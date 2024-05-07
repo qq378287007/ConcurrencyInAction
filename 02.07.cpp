@@ -2,10 +2,10 @@
 #include <iostream>
 using namespace std;
 
-//noexcept 
-//编译期完成声明和检查工作
-//减少运行时开销(额外代码，异常等错误信息)
-//若报错, 进程直接结束, 不会抛出异常信息.
+// noexcept
+// 编译期完成声明和检查工作
+// 减少运行时开销(额外代码，异常等错误信息)
+// 若报错, 进程直接结束, 不会抛出异常信息.
 class joining_thread
 {
     thread t;
@@ -49,7 +49,7 @@ public:
     {
         if (joinable())
             join();
-            
+
         cout << "~joining_thread\n";
     }
 

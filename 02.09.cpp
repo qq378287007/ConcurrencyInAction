@@ -19,7 +19,6 @@ template <typename Iterator, typename T>
 T parallel_accumulate(Iterator first, Iterator last, T init)
 {
     unsigned long const length = distance(first, last);
-
     if (!length)
         return init;
 
@@ -48,10 +47,10 @@ T parallel_accumulate(Iterator first, Iterator last, T init)
     {
         Iterator block_end = block_start;
         advance(block_end, block_size);
-        threads[i] = thread(accumulate_block<Iterator, T>(),
-                            block_start, block_end, ref(results[i]));
+        threads[i] = thread(accumulate_block<Iterator, T>(), block_start, block_end, ref(results[i]));
         block_start = block_end;
     }
+
     // 处理最后一小块
     accumulate_block<Iterator, T>()(block_start, last, results[num_threads - 1]);
 
@@ -59,14 +58,14 @@ T parallel_accumulate(Iterator first, Iterator last, T init)
     for_each(threads.begin(), threads.end(), mem_fn(&thread::join));
 
     // 数值累加
-    return accumulate(results.begin(), results.end(), init);
+    return accumulate(results.cbegin(), results.cend(), init);
 }
 
 int main()
 {
     vector<int> vi;
     for (int i = 0; i < 10; ++i)
-        vi.push_back(10);
+        vi.push_back(i);
 
     int sum = parallel_accumulate(vi.begin(), vi.end(), 5);
     cout << "sum=" << sum << endl;

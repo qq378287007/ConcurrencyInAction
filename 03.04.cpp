@@ -2,7 +2,7 @@
 #include <memory>
 using namespace std;
 
-struct empty_stack : std::exception
+struct empty_stack : exception
 {
     const char *what() const throw();
 };
@@ -16,7 +16,7 @@ public:
     threadsafe_stack &operator=(const threadsafe_stack &) = delete;
 
     void push(T new_value);
-    std::shared_ptr<T> pop();
+    shared_ptr<T> pop();
     void pop(T &value);
     bool empty() const;
 };

@@ -15,19 +15,15 @@ struct connection_handle
     data_packet receive_data() { return data_packet(); }
 };
 
-struct remote_connection_manager
-{
-    connection_handle open(connection_info const &) { return connection_handle(); }
-} connection_manager;
+connection_handle open(connection_info const &) { return connection_handle(); }
 
 class X
 {
-private:
     connection_info connection_details;
     connection_handle connection;
     once_flag connection_init_flag;
 
-    void open_connection() { connection = connection_manager.open(connection_details); }
+    void open_connection() { connection = open(connection_details); }
 
 public:
     X(connection_info const &connection_details_) : connection_details(connection_details_) {}

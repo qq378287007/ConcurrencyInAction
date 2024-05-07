@@ -10,7 +10,6 @@ using namespace std;
 template <typename T>
 class threadsafe_queue
 {
-private:
     mutable mutex mut;
     queue<T> data_queue;
     condition_variable data_cond;
