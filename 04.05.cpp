@@ -10,7 +10,7 @@ using namespace std;
 template <typename T>
 class threadsafe_queue
 {
-    mutable mutex mut;
+    mutable mutex mut; // const对象，允许其数据成员发生变动
     queue<T> data_queue;
     condition_variable data_cond;
 
@@ -97,11 +97,11 @@ int main()
     Func f1 = &threadsafe_queue<int>::wait_and_pop;
     thread t3(bind(f1, &q, ref(data)));
 
-    // shared_ptr<int> (threadsafe_queue<int>::*f2)() = &threadsafe_queue<int>::wait_and_pop;
-    // thread t4(bind(f2, &q));
-
     shared_ptr<int> data2;
     thread t4([&q, &data2] { data2 = q.wait_and_pop(); });
+
+    // shared_ptr<int> (threadsafe_queue<int>::*f2)() = &threadsafe_queue<int>::wait_and_pop;
+    // thread t5(bind(f2, &q));
 
     t1.join();
     t2.join();

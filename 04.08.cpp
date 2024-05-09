@@ -30,11 +30,12 @@ int main()
     vector<char> *a;
     int b;
     thread t(std::move(task), a, std::ref(b));
+    t.detach();
 
     string result = res.get();
     cout << "result: " << result << endl;
 
-    t.join();//多余？
+    //t.join();//多余？
 
     return 0;
 }

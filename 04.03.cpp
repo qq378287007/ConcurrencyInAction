@@ -2,9 +2,8 @@
 using namespace std;
 
 template <typename T>
-class threadsafe_queue
+struct threadsafe_queue
 {
-public:
     threadsafe_queue();
     threadsafe_queue(const threadsafe_queue &);
     threadsafe_queue &operator=(const threadsafe_queue &) = delete;
