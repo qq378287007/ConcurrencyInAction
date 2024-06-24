@@ -37,6 +37,9 @@ public:
     }
 };
 
+void foo(short) {}
+void foo(int) = delete;
+
 int main()
 {
     no_copies a;
@@ -46,12 +49,15 @@ int main()
     // c = a; //禁止赋值
 
     move_only m1;
-    //move_only m2(m1);//禁止拷贝
-    move_only m3(move(m1));
+    // move_only m2(m1);//禁止拷贝
+    move_only m3(move(m1)); // move_only m3(static_cast<move_only&&>(m1));
 
     move_only m4;
-    //m4 = m3;//禁止赋值
+    // m4 = m3;//禁止赋值
     m4 = move(m3);
+
+    // foo(42);//error
+    foo((short)42);
 
     return 0;
 }

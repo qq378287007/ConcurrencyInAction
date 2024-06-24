@@ -1,16 +1,3 @@
-class CX
-{
-    int a;
-    int b;
-
-public:
-    CX() = default;
-    CX(int a_, int b_) : a(a_), b(b_) {}
-    int get_a() const { return a; }
-    int get_b() const { return b; }
-    int foo() const { return a + b; }
-};
-
 class Y
 {
 public:
@@ -18,7 +5,7 @@ public:
     Y &operator=(const Y &) = default;
 
 protected:
-    virtual ~Y() = default;
+    virtual ~Y() = default; // 加入虚函数性质
 
 private:
     Y() = default; // 改变访问级别
@@ -31,29 +18,20 @@ struct aggregate
     int a;
     double b;
 };
-
-template <unsigned size>
-struct test
+struct X
 {
+    int a;
 };
 
 int main()
 {
-    // 常量表达式
-    const int i = 23;
-    const int two_i = i * 2;
-    const int four = 4;
-    const int forty_two = two_i - four;
-
-    int bounds = 99;
-    // int array[bounds];//error
-    // test<bounds> ia;//error
-
-    const int bounds2 = 99;
-    int array2[bounds2];
-    test<bounds2> ia2;
 
     aggregate x = {42, 3.14};
+
+    X x1;       // x1.a值未知
+    X x2 = X(); // x2.a为0
+    // X::X():a(){}//a为0
+    // X::X(){}//a未知
 
     return 0;
 }
